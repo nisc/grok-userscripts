@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Grok Delete File Uploads
 // @namespace    nisc
-// @version      0.5
+// @version      0.6
 // @description  Deletes all uploaded files on Grok files page by pressing a button
 // @author       nisc
 // @match        https://grok.com/files
@@ -9,67 +9,54 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(function(){
     'use strict';
-    console.log('Script running');
+    const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-    function deleteFile(deleteButton) {
-        return new Promise((resolve) => {
-            deleteButton.click();
-            const startTime = Date.now();
-            const interval = setInterval(() => {
-                const confirmButton = document.querySelector('button[aria-label="Confirm"]');
-                if (confirmButton && confirmButton.offsetParent !== null) {  // Ensure it's visible
-                    clearInterval(interval);
-                    confirmButton.click();
-                    resolve();
-                } else if (Date.now() - startTime > 5000) {
-                    clearInterval(interval);
-                    console.error('Timeout waiting for "Delete all files" confirm button');
-                    resolve();
-                }
-            }, 100);
-        });
-    }
-
-    async function deleteAllFiles() {
-        while (true) {
-            const deleteButton = document.querySelector('button[aria-label="Delete"]');
-            if (!deleteButton) {
-                break;
-            }
-            await deleteFile(deleteButton);
-            await new Promise(resolve => setTimeout(resolve, 1000));  // Wait for page update
+    async function deleteAll() {
+        const deleteButtons = Array.from(document.querySelectorAll('button[aria-label="Delete"]'));
+        if (deleteButtons.length === 0) {
+            console.warn('GRK-USR: No delete buttons found');
+            return;
         }
+
+        for (const btn of deleteButtons) {
+            btn.click();
+            await sleep(200); // Allow modal to open
+        }
+
+        await sleep(500); // Wait for all confirm modals to render
+
+        const confirmButtons = Array.from(document.querySelectorAll('button[aria-label="Confirm"]'));
+        if (confirmButtons.length === 0) {
+            console.warn('GRK-USR: No confirm buttons found');
+            return;
+        }
+
+        for (const conf of confirmButtons) {
+            conf.click();
+            await sleep(200); // Allow each deletion to process
+        }
+
+        console.log('GRK-USR: Deletion sequence complete');
     }
 
     function addButton() {
         const container = document.querySelector('.max-w-\\[50rem\\]');
-        if (container) {
-            const triggerButton = document.createElement('button');
-            triggerButton.textContent = 'Delete all files';
-            triggerButton.style.backgroundColor = 'red';
-            triggerButton.style.color = 'white';
-            triggerButton.style.padding = '8px 12px';
-            triggerButton.style.border = 'none';
-            triggerButton.style.borderRadius = '8px';
-            triggerButton.style.cursor = 'pointer';
-            triggerButton.style.zIndex = '1000';
-            triggerButton.style.marginBottom = '10px';
-            triggerButton.addEventListener('click', deleteAllFiles);
-            container.insertBefore(triggerButton, container.firstChild);
-            console.log('"Delete all files" button added to container');
-        } else {
-            console.error('Container .max-w-[50rem] not found (required to add "Delete all files" button)');
+        if (container && !document.getElementById('delete-all-btn')) {
+            const btn = document.createElement('button');
+            btn.id = 'delete-all-btn';
+            btn.textContent = 'Delete all files';
+            Object.assign(btn.style, {
+                backgroundColor: 'red', color: 'white', padding: '8px 12px',
+                border: 'none', borderRadius: '8px', cursor: 'pointer', marginBottom: '10px'
+            });
+            btn.addEventListener('click', deleteAll);
+            container.insertBefore(btn, container.firstChild);
+            console.log('GRK-USR: Delete all files button added');
         }
     }
 
-    const retryAddingButton = setInterval(() => {
-        if (document.querySelector('.max-w-\\[50rem\\]')) {
-            addButton();
-            clearInterval(retryAddingButton);
-        }
-    }, 500);
-
-    setTimeout(() => clearInterval(retryAddingButton), 10000);
+    new MutationObserver(addButton).observe(document.body, { childList: true, subtree: true });
+    addButton();
 })();
