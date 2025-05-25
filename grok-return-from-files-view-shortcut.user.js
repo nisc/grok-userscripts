@@ -5,6 +5,7 @@
 // @description  When on grok.com/files, ESC takes user back
 // @author       nisc
 // @match        https://grok.com/files
+// @icon         https://grok.com/images/favicon-light.png
 // @grant        none
 // ==/UserScript==
 
