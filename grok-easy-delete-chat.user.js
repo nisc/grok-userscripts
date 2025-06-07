@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Grok Easy Delete Chat
 // @namespace    nisc
-// @version      2025.06.06-A
+// @version      2025.06.07-A
 // @description  Delete Grok chat with only Cmd/Ctrl+Shift+Delete, auto-confirms popup.
 // @homepageURL  https://raw.githubusercontent.com/nisc/grok-userscripts/
 // @author       nisc
@@ -27,12 +27,12 @@
     // Timing delays (in ms) for various operations
     delays: {
       RETRY: 200,               // Delay between retries when finding chat element
-      HOVER: 25,                // Delay after simulating hover events
-      KEY_PRESS: 25,            // Delay between key press events
-      MENU_OPEN: 150,           // Delay for menu to open after clicking history
-      CLICK_TO_DELETE: 100,     // Delay between click and delete command
-      DELETE_TO_ENTER: 100,     // Delay between delete and enter press
-      FINAL_ESCAPE: 200,        // Final delay before pressing escape
+      HOVER: 75,                // Delay after simulating hover events
+      KEY_PRESS: 75,            // Delay between key press events
+      MENU_OPEN: 125,           // Delay for menu to open after clicking history
+      CLICK_TO_DELETE: 125,     // Delay between click and delete command
+      DELETE_TO_ENTER: 125,     // Delay between delete and enter press
+      FINAL_ESCAPE: 250,        // Final delay before pressing escape
     },
     // Key codes for special keys
     keyCodes: {
@@ -64,11 +64,6 @@
     // Text constants
     text: {
       current: 'Current'
-    },
-    // URL patterns for private chat detection
-    urls: {
-      privatePath: '/chat',
-      privateHashes: ['#private', '#']
     }
   };
 
@@ -78,7 +73,24 @@
   const utils = {
     delay: ms => new Promise(resolve => setTimeout(resolve, ms)),
     querySelector: (selector, context = document) => context.querySelector(selector),
-    querySelectorAll: (selector, context = document) => Array.from(context.querySelectorAll(selector))
+    querySelectorAll: (selector, context = document) => Array.from(context.querySelectorAll(selector)),
+    hasClass: (element, className) => {
+      if (!element) return false;
+      
+      // Check the element itself
+      if (element.classList.contains(className)) return true;
+      
+      // Check parent elements
+      let parent = element;
+      while (parent) {
+        if (parent.classList && parent.classList.contains(className)) {
+          return true;
+        }
+        parent = parent.parentElement;
+      }
+      
+      return false;
+    }
   };
 
   /**
@@ -169,16 +181,11 @@
     },
 
     isPrivateChat() {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      const urlIndicatesPrivate = path === CONFIG.urls.privatePath || 
-                                 CONFIG.urls.privateHashes.includes(hash);
-
       const queryBar = domCache.queryBar;
-      const uiIndicatesPrivate = queryBar && 
-        CONFIG.selectors.privateClasses.some(className => queryBar.classList.contains(className));
+      if (!queryBar) return false;
 
-      return urlIndicatesPrivate || uiIndicatesPrivate;
+      // Check for purple classes either directly on the query bar or in its parent containers
+      return CONFIG.selectors.privateClasses.some(className => utils.hasClass(queryBar, className));
     },
 
     clickHistoryButton() {
