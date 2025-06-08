@@ -4,6 +4,7 @@
 // @version      2025.06.08-A
 // @description  Disable CMD+K shortcut in Grok due to overlap with Firefox (still available via SHIFT-CTRL-K)
 // @homepageURL  https://github.com/nisc/grok-userscripts/
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-fix-firefox-search-shortcut.user.js
 // @author       nisc
 // @match        https://grok.com/*
 // @icon         https://grok.com/images/favicon-light.png

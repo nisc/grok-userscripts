@@ -4,6 +4,7 @@
 // @version      2025.06.08-A
 // @description  Add a button to delete all uploaded files on grok.com/files
 // @homepageURL  https://github.com/nisc/grok-userscripts/
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-delete-file-uploads.user.js
 // @author       nisc
 // @match        https://grok.com/files
 // @icon         https://grok.com/images/favicon-light.png

@@ -4,6 +4,7 @@
 // @version      2025.06.08-A
 // @description  Adds a Light/Dark mode toggle at the bottom left
 // @homepageURL  https://github.com/nisc/grok-userscripts/
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-theme-toggle.user.js
 // @author       nisc
 // @match        https://grok.com/*
 // @icon         https://grok.com/images/favicon-light.png

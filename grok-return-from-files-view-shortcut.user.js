@@ -4,6 +4,7 @@
 // @version      2025.06.08-A
 // @description  When on grok.com/files, ESC takes user back
 // @homepageURL  https://github.com/nisc/grok-userscripts/
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-return-from-files-view-shortcut.user.js
 // @author       nisc
 // @match        https://grok.com/files
 // @icon         https://grok.com/images/favicon-light.png

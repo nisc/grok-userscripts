@@ -4,6 +4,7 @@
 // @version      2025.06.08-A
 // @description  Automatically redirects to private chat on grok.com when on '/' or '/chat' without '#private'
 // @homepageURL  https://github.com/nisc/grok-userscripts/
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-private-by-default.user.js
 // @author       nisc
 // @match        https://grok.com/*
 // @icon         https://grok.com/images/favicon-light.png

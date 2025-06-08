@@ -4,6 +4,7 @@
 // @version      2025.06.08-A
 // @description  Hides the "Grok 3 Enabled" bubble/box
 // @homepageURL  https://github.com/nisc/grok-userscripts/
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-hide-annoyances.user.js
 // @author       nisc
 // @match        https://grok.com/*
 // @icon         https://grok.com/images/favicon-light.png

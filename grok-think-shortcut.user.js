@@ -4,6 +4,7 @@
 // @version      2025.06.08-A
 // @description  Activate Grok Thinking mode with Cmd/Ctrl+Shift+D
 // @homepageURL  https://github.com/nisc/grok-userscripts/
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-think-shortcut.user.js
 // @author       nisc
 // @match        https://grok.com/*
 // @icon         https://grok.com/favicon.ico
