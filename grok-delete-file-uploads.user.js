@@ -2,7 +2,7 @@
 // @name         Grok Delete File Uploads
 // @namespace    nisc
 // @version      2025.06.08-A
-// @description  Add a button to delete all uploaded files on the grok.com/files
+// @description  Add a button to delete all uploaded files on grok.com/files
 // @homepageURL  https://github.com/nisc/grok-userscripts/
 // @author       nisc
 // @match        https://grok.com/files
