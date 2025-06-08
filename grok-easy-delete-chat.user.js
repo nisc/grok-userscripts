@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Grok Easy Delete Chat
 // @namespace    nisc
-// @version      2025.06.07-A
-// @description  Delete Grok chat with only Cmd/Ctrl+Shift+Delete, auto-confirms popup.
-// @homepageURL  https://raw.githubusercontent.com/nisc/grok-userscripts/
+// @version      2025.06.08-A
+// @description  Delete Grok chat with only Cmd/Ctrl+Shift+Delete, auto-confirms popup
+// @homepageURL  https://github.com/nisc/grok-userscripts/
 // @author       nisc
 // @match        https://grok.com/*
 // @icon         https://grok.com/favicon.ico
@@ -76,10 +76,10 @@
     querySelectorAll: (selector, context = document) => Array.from(context.querySelectorAll(selector)),
     hasClass: (element, className) => {
       if (!element) return false;
-      
+
       // Check the element itself
       if (element.classList.contains(className)) return true;
-      
+
       // Check parent elements
       let parent = element;
       while (parent) {
@@ -88,7 +88,7 @@
         }
         parent = parent.parentElement;
       }
-      
+
       return false;
     }
   };
@@ -155,7 +155,7 @@
 
       ['mouseover', 'mouseenter'].forEach(event => this.simulateMouseEvent(element, event));
       await utils.delay(CONFIG.delays.HOVER);
-      
+
       element.classList.add('hover');
     },
 
@@ -176,7 +176,7 @@
    */
   const chatOperations = {
     isValidInput(target) {
-      return target.tagName === 'TEXTAREA' || 
+      return target.tagName === 'TEXTAREA' ||
         (!['INPUT'].includes(target.tagName) && !target.isContentEditable);
     },
 
@@ -264,14 +264,14 @@
    */
   const handleKeyDown = (e) => {
     if (!chatOperations.isValidInput(document.activeElement)) return;
-    
-    if (e.key === CONFIG.shortcut.key && 
-        e[CONFIG.shortcut.modifier] && 
-        e.shiftKey && 
+
+    if (e.key === CONFIG.shortcut.key &&
+        e[CONFIG.shortcut.modifier] &&
+        e.shiftKey &&
         !e.altKey) {
       e.preventDefault();
       e.stopPropagation();
-      
+
       if (chatOperations.isPrivateChat()) {
         chatOperations.simulatePrivateChatShortcut();
       } else if (chatOperations.clickHistoryButton()) {

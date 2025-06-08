@@ -91,7 +91,7 @@
      * Updates localStorage, applies theme, and updates UI
      */
     function toggleTheme() {
-        currentTheme = currentTheme === CONFIG.THEME.MODES.DARK ? 
+        currentTheme = currentTheme === CONFIG.THEME.MODES.DARK ?
             CONFIG.THEME.MODES.LIGHT : CONFIG.THEME.MODES.DARK;
         localStorage.setItem(CONFIG.THEME.KEY, currentTheme);
         applyTheme(currentTheme);
@@ -139,7 +139,7 @@
     // Watch for external theme changes and maintain chosen theme
     const observer = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
-            if (mutation.type === 'attributes' && 
+            if (mutation.type === 'attributes' &&
                 (mutation.attributeName === 'class' || mutation.attributeName === 'style')) {
                 applyTheme(currentTheme);
             }

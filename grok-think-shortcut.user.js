@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Grok Think Shortcut
 // @namespace    nisc
-// @version      2026.06.07-A
-// @description  Activate Grok Thinking mode with Cmd/Ctrl+Shift+D.
+// @version      2025.06.08-A
+// @description  Activate Grok Thinking mode with Cmd/Ctrl+Shift+D
 // @homepageURL  https://github.com/nisc/grok-userscripts/
 // @author       nisc
 // @match        https://grok.com/*
@@ -14,26 +14,58 @@
 (function() {
     'use strict';
 
+    /**
+     * Configuration object containing all constants used in the script
+     * KEYS: Keyboard shortcut configuration
+     * BUTTON: Settings for finding the target button
+     */
     const CONFIG = {
-      shortcut: {
-        key: 'd',
-        requireShift: true
-      },
-      text: 'Think'
+        KEYS: {
+            KEY: 'd',
+            REQUIRES_SHIFT: true,
+            REQUIRES_ALT: false
+        },
+        BUTTON: {
+            TEXT: 'Think'
+        }
     };
 
-    document.addEventListener('keydown', e => {
-      if (e.key.toLowerCase() === CONFIG.shortcut.key &&
-          (navigator.userAgent.includes('Mac') ? e.metaKey : e.ctrlKey) &&
-          e.shiftKey === CONFIG.shortcut.requireShift &&
-          !e.altKey) {
-        e.preventDefault();
-        e.stopPropagation();
+    /**
+     * Handles keyboard shortcut for toggling Think mode
+     *
+     * Shortcut behavior:
+     * - Windows/Linux: Ctrl + Shift + D
+     * - macOS: Cmd + Shift + D
+     *
+     * The handler will:
+     * 1. Check if the correct key combination is pressed
+     * 2. Prevent default browser behavior
+     * 3. Find and click the Think button if it exists
+     */
+    function handleThinkShortcut(event) {
+        // Check if it's the right key combination
+        const isMac = navigator.userAgent.includes('Mac');
+        const isModifierPressed = isMac ? event.metaKey : event.ctrlKey;
 
-        const thinkButton = Array.from(document.querySelectorAll('button'))
-          .find(button => button.textContent.trim() === CONFIG.text);
+        if (event.key.toLowerCase() === CONFIG.KEYS.KEY &&
+            isModifierPressed &&
+            event.shiftKey === CONFIG.KEYS.REQUIRES_SHIFT &&
+            event.altKey === CONFIG.KEYS.REQUIRES_ALT) {
 
-        if (thinkButton) thinkButton.click();
-      }
-    });
+            // Stop any default browser behavior
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Find and click the Think button
+            const thinkButton = Array.from(document.querySelectorAll('button'))
+                .find(button => button.textContent.trim() === CONFIG.BUTTON.TEXT);
+
+            if (thinkButton) {
+                thinkButton.click();
+            }
+        }
+    }
+
+    // Listen for keyboard shortcuts anywhere on the page
+    document.addEventListener('keydown', handleThinkShortcut);
 })();

@@ -14,6 +14,12 @@
 (function() {
     'use strict';
 
+    /**
+     * Configuration object containing all constants used in the script
+     * - Button appearance and behavior settings
+     * - DOM selectors for finding elements
+     * - Timing delays for various operations
+     */
     const CONFIG = {
         BUTTON_ID: 'delete-all-btn',
         BUTTON_TEXT: 'Delete all files',
@@ -36,9 +42,22 @@
         }
     };
 
+    /**
+     * Utility function to create a promise that resolves after specified milliseconds
+     * Used to add necessary delays between operations
+     */
     const sleep = ms => new Promise(res => setTimeout(res, ms));
 
+    /**
+     * Main deletion function that:
+     * 1. Clicks all delete buttons sequentially
+     * 2. Waits for confirmation modals to render
+     * 3. Clicks all confirm buttons sequentially
+     *
+     * Delays are added between operations to ensure UI can keep up
+     */
     async function deleteAll() {
+        // First phase: Click all delete buttons
         const deleteButtons = Array.from(document.querySelectorAll(CONFIG.DELETE_BUTTON_SELECTOR));
         if (deleteButtons.length === 0) {
             return;
@@ -49,8 +68,10 @@
             await sleep(CONFIG.DELAYS.DELETE_BUTTON);
         }
 
+        // Wait for all confirmation modals to render
         await sleep(CONFIG.DELAYS.MODAL_RENDER);
 
+        // Second phase: Confirm all deletions
         const confirmButtons = Array.from(document.querySelectorAll(CONFIG.CONFIRM_BUTTON_SELECTOR));
         if (confirmButtons.length === 0) {
             return;
@@ -62,6 +83,10 @@
         }
     }
 
+    /**
+     * Creates and adds the "Delete all files" button to the page
+     * Only adds the button if it doesn't already exist
+     */
     function addButton() {
         const container = document.querySelector(CONFIG.CONTAINER_SELECTOR);
         if (container && !document.getElementById(CONFIG.BUTTON_ID)) {
@@ -74,6 +99,10 @@
         }
     }
 
+    // Watch for DOM changes and try to add button when possible
+    // This ensures the button is added even if the container loads dynamically
     new MutationObserver(addButton).observe(document.body, { childList: true, subtree: true });
+
+    // Initial attempt to add the button
     addButton();
 })();

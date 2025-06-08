@@ -14,6 +14,10 @@
 (function() {
     'use strict';
 
+    /**
+     * Configuration object containing all constants used in the script
+     * Organized into logical sections for different aspects of the application
+     */
     const CONFIG = {
         MODEL: {
             name: 'grok-3'
@@ -76,9 +80,20 @@
         }
     };
 
+    /**
+     * Utility functions for common operations
+     * - ID generation for API requests
+     * - Element ID formatting
+     * - Time window and value formatting
+     */
     const utils = {
+        // Generates a random ID for API request tracking
         generateId: () => Math.random().toString(16).slice(2),
+
+        // Creates consistent element IDs for rate limit displays
         getLimitElementId: type => `rate_limit_${type.toLowerCase()}`,
+
+        // Formats time windows into days or hours with appropriate units
         formatTimeWindow: seconds => {
             if (seconds >= CONFIG.TIME.SECONDS_PER_DAY) {
                 const value = seconds / CONFIG.TIME.SECONDS_PER_DAY;
@@ -87,16 +102,24 @@
             const value = seconds / CONFIG.TIME.SECONDS_PER_HOUR;
             return { value, unit: 'h' };
         },
+
+        // Formats numeric values, rounding integers and fixing decimals to 1 place
         formatValue: value => Number.isInteger(value) ? Math.round(value) : value.toFixed(1)
     };
 
+    /**
+     * UI-related functions for creating and updating the display
+     * Handles all DOM manipulation and styling
+     */
     const ui = {
+        // Injects custom styles into the document
         createStyles: () => {
             const style = document.createElement('style');
             style.textContent = CONFIG.UI.styles;
             document.head.appendChild(style);
         },
 
+        // Creates the rate limit display menu structure
         createMenu: () => {
             const wrapper = document.createElement('div');
             wrapper.className = 'grok-rate-limit-wrapper';
@@ -108,6 +131,7 @@
             const column = document.createElement('div');
             column.className = 'grok-column';
 
+            // Create display elements for each request type
             Object.entries(CONFIG.REQUEST_TYPES).forEach(([type, displayName]) => {
                 const div = document.createElement('div');
                 div.id = utils.getLimitElementId(type);
@@ -121,6 +145,7 @@
             return wrapper;
         },
 
+        // Updates the display with new rate limit information
         updateRateLimits: limits => {
             Object.entries(CONFIG.REQUEST_TYPES).forEach(([type, displayName]) => {
                 const elem = document.getElementById(utils.getLimitElementId(type));
@@ -129,7 +154,7 @@
                 if (limit?.windowSizeSeconds) {
                     const { value, unit } = utils.formatTimeWindow(limit.windowSizeSeconds);
                     const formattedValue = utils.formatValue(value);
-                    const display = 
+                    const display =
                         `${displayName}: <b>${limit.remainingQueries}</b>/${limit.totalQueries} ` +
                         `(${formattedValue}${unit})`;
                     elem.innerHTML = display;
@@ -140,10 +165,16 @@
         }
     };
 
+    /**
+     * API-related functions for fetching rate limits
+     * Handles all server communication and error handling
+     */
     const api = {
+        // Fetches rate limits for all request types in parallel
         async fetchRateLimits() {
             try {
                 const limits = {};
+                // Create an array of promises for parallel execution
                 const requests = Object.keys(CONFIG.REQUEST_TYPES).map(async type => {
                     const headers = {
                         ...CONFIG.API.headers,
@@ -166,6 +197,7 @@
                     limits[type] = await response.json();
                 });
 
+                // Wait for all requests to complete
                 await Promise.all(requests);
                 ui.updateRateLimits(limits);
             } catch (error) {
@@ -175,6 +207,13 @@
         }
     };
 
+    /**
+     * Initializes the application:
+     * 1. Creates and injects styles
+     * 2. Creates and adds the display menu
+     * 3. Fetches initial rate limits
+     * 4. Sets up periodic updates
+     */
     const init = () => {
         ui.createStyles();
         document.body.appendChild(ui.createMenu());
@@ -182,6 +221,7 @@
         setInterval(api.fetchRateLimits, CONFIG.UI.refreshInterval);
     };
 
+    // Initialize when DOM is ready
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
         init();
     } else {
