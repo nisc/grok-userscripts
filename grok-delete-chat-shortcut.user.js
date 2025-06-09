@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         Grok Easy Delete Chat
+// @name         Grok Delete Chat Shortcut
 // @namespace    nisc
-// @version      2025.06.08-A
+// @version      2025.06.09-A
 // @description  Delete Grok chat with only Cmd/Ctrl+Shift+Delete, auto-confirms popup
 // @homepageURL  https://github.com/nisc/grok-userscripts/
-// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-easy-delete-chat.user.js
+// @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-delete-chat-shortcut.user.js
 // @author       nisc
 // @match        https://grok.com/*
 // @icon         https://grok.com/favicon.ico

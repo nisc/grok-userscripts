@@ -29,8 +29,8 @@ These scripts have been tested with Firefox and Violentmonkey on macOS, but shou
 
 | Script Name | Description |
 |-------------|-------------|
+| [`grok-delete-chat-shortcut.user.js`](grok-delete-chat-shortcut.user.js) | Enables quick deletion of chats on grok.com using Cmd/Ctrl+Shift+Delete, with automatic confirmation of the deletion prompt. |
 | [`grok-delete-file-uploads.user.js`](grok-delete-file-uploads.user.js) | Adds a "Delete all files" button on the Grok files page (`https://grok.com/files`) to batch delete all uploaded files. |
-| [`grok-easy-delete-chat.user.js`](grok-easy-delete-chat.user.js) | Enables quick deletion of chats on grok.com using Cmd/Ctrl+Shift+Delete, with automatic confirmation of the deletion prompt. |
 | [`grok-fix-firefox-search-shortcut.user.js`](grok-fix-firefox-search-shortcut.user.js) | Disables the CMD+K shortcut in Grok to prevent conflicts with Firefox's own shortcuts, while still allowing SHIFT-CTRL-K as an alternative. |
 | [`grok-hide-annoyances.user.js`](grok-hide-annoyances.user.js) | Hides the "Grok 3 Enabled" notification bubble for a cleaner interface on grok.com. |
 | [`grok-private-by-default.user.js`](grok-private-by-default.user.js) | Automatically redirects to the private chat mode on grok.com when accessing the root path (`/`) or `/chat` without `#private`. |
