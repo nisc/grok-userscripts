@@ -37,7 +37,7 @@ These scripts have been tested with Firefox and Violentmonkey on macOS, but shou
 | [`grok-quota-display.user.js`](grok-quota-display.user.js) | Displays current rate limits for different request types in a fixed menu at the bottom right of grok.com pages. |
 | [`grok-return-from-files-view-shortcut.user.js`](grok-return-from-files-view-shortcut.user.js) | Allows returning from the files view (`https://grok.com/files`) to the previous page or main page (`https://grok.com`) using the ESC key. |
 | [`grok-theme-toggle.user.js`](grok-theme-toggle.user.js) | Adds a toggle button at the bottom left to switch between light and dark themes on grok.com, with theme persistence. |
-| [`grok-think-shortcut.user.js`](grok-think-shortcut.user.js) | Adds keyboard shortcut (Cmd/Ctrl+Shift+D) to quickly toggle Grok's "Think" mode without using the mouse. |
+| [`grok-think-shortcut.user.js`](grok-think-shortcut.user.js) | Adds keyboard shortcut (Ctrl+Cmd+T on macOS, Ctrl+Alt+T on Windows/Linux) to quickly toggle Grok's "Think" mode without using the mouse. |
 
 ## Contributing
 

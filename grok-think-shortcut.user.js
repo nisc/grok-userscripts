@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Grok Think Shortcut
 // @namespace    nisc
-// @version      2025.06.08-A
-// @description  Activate Grok Thinking mode with Cmd/Ctrl+Shift+D
+// @version      2025.06.09-A
+// @description  Activate Grok Thinking mode with Ctrl+Cmd+T (macOS) or Ctrl+Alt+T (Windows/Linux)
 // @homepageURL  https://github.com/nisc/grok-userscripts/
 // @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-think-shortcut.user.js
 // @author       nisc
@@ -22,9 +22,10 @@
      */
     const CONFIG = {
         KEYS: {
-            KEY: 'd',
-            REQUIRES_SHIFT: true,
-            REQUIRES_ALT: false
+            KEY: 't',
+            REQUIRES_SHIFT: false,
+            REQUIRES_ALT: false,
+            REQUIRES_CTRL: true
         },
         BUTTON: {
             TEXT: 'Think'
@@ -51,7 +52,8 @@
         if (event.key.toLowerCase() === CONFIG.KEYS.KEY &&
             isModifierPressed &&
             event.shiftKey === CONFIG.KEYS.REQUIRES_SHIFT &&
-            event.altKey === CONFIG.KEYS.REQUIRES_ALT) {
+            event.altKey === CONFIG.KEYS.REQUIRES_ALT &&
+            event.ctrlKey === CONFIG.KEYS.REQUIRES_CTRL) {
 
             // Stop any default browser behavior
             event.preventDefault();
