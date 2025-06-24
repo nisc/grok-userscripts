@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Grok Delete Chat Shortcut
 // @namespace    nisc
-// @version      2025.06.09-A
+// @version      2025.06.24-A
 // @description  Delete Grok chat with only Cmd/Ctrl+Shift+Delete, auto-confirms popup
 // @homepageURL  https://github.com/nisc/grok-userscripts/
 // @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-delete-chat-shortcut.user.js
@@ -12,7 +12,7 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
 
   // Configuration object containing all adjustable settings and constants
@@ -48,7 +48,6 @@
     },
     // DOM selectors used throughout the script
     selectors: {
-      historyButton: 'button[aria-label="History"]',
       dialog: '[role="dialog"]',
       clickableArea: '.cursor-pointer',
       cmdkItem: '[cmdk-item]',
@@ -130,7 +129,10 @@
         code: this._getKeyCode(key),
         bubbles: true,
         cancelable: true,
+        composed: true,
         keyCode: this._getKeyCodeNumber(key),
+        which: this._getKeyCodeNumber(key),
+        view: window,
         ...options
       });
     },
@@ -164,11 +166,68 @@
       element.focus();
       await utils.delay(CONFIG.delays.KEY_PRESS);
 
-      ['keydown', 'keyup'].forEach(async (type) => {
-        element.dispatchEvent(this.createKeyEvent(key, options, type));
-        document.dispatchEvent(this.createKeyEvent(key, options, type));
-        await utils.delay(CONFIG.delays.KEY_PRESS);
+      // Create events for multiple targets to ensure capture
+      const targets = [element, document.body, document, window];
+
+      // Keydown
+      const keydownEvent = this.createKeyEvent(key, options, 'keydown');
+      for (const target of targets) {
+        try {
+          target.dispatchEvent(keydownEvent.constructor === KeyboardEvent ? keydownEvent : this.createKeyEvent(key, options, 'keydown'));
+        } catch (e) {
+          // Skip targets that can't receive events
+        }
+      }
+      await utils.delay(CONFIG.delays.KEY_PRESS);
+
+      // Keypress (for compatibility)
+      const keypressEvent = this.createKeyEvent(key, options, 'keypress');
+      for (const target of targets) {
+        try {
+          target.dispatchEvent(keypressEvent.constructor === KeyboardEvent ? keypressEvent : this.createKeyEvent(key, options, 'keypress'));
+        } catch (e) {
+          // Skip targets that can't receive events
+        }
+      }
+      await utils.delay(CONFIG.delays.KEY_PRESS);
+
+      // Keyup
+      const keyupEvent = this.createKeyEvent(key, options, 'keyup');
+      for (const target of targets) {
+        try {
+          target.dispatchEvent(keyupEvent.constructor === KeyboardEvent ? keyupEvent : this.createKeyEvent(key, options, 'keyup'));
+        } catch (e) {
+          // Skip targets that can't receive events
+        }
+      }
+    },
+
+    // Alternative method using more direct approach
+    async simulateKeyPressAlternative(key, options = {}) {
+      // Try a more direct simulation approach
+      const event = new KeyboardEvent('keydown', {
+        key: key,
+        code: key === 'k' ? 'KeyK' : `Key${key.toUpperCase()}`,
+        keyCode: key === 'k' ? 75 : key.toUpperCase().charCodeAt(0),
+        which: key === 'k' ? 75 : key.toUpperCase().charCodeAt(0),
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        view: window,
+        ctrlKey: options.ctrlKey || false,
+        shiftKey: options.shiftKey || false,
+        altKey: options.altKey || false,
+        metaKey: options.metaKey || false
       });
+
+      // Dispatch to multiple elements
+      document.dispatchEvent(event);
+      document.body.dispatchEvent(event);
+      if (document.activeElement) {
+        document.activeElement.dispatchEvent(event);
+      }
+
+      return true;
     }
   };
 
@@ -189,13 +248,14 @@
       return CONFIG.selectors.privateClasses.some(className => utils.hasClass(queryBar, className));
     },
 
-    clickHistoryButton() {
-      const button = utils.querySelector(CONFIG.selectors.historyButton);
-      if (button) {
-        button.click();
-        return true;
-      }
-      return false;
+    async openHistoryMenu() {
+      // Trigger Shift+Ctrl+K only once using the most reliable method
+      await eventSimulator.simulateKeyPressAlternative('k', {
+        ctrlKey: true,
+        shiftKey: true
+      });
+
+      return true;
     },
 
     findSelectedChat(retryCount = 0) {
@@ -267,16 +327,18 @@
     if (!chatOperations.isValidInput(document.activeElement)) return;
 
     if (e.key === CONFIG.shortcut.key &&
-        e[CONFIG.shortcut.modifier] &&
-        e.shiftKey &&
-        !e.altKey) {
+      e[CONFIG.shortcut.modifier] &&
+      e.shiftKey &&
+      !e.altKey) {
       e.preventDefault();
       e.stopPropagation();
 
       if (chatOperations.isPrivateChat()) {
         chatOperations.simulatePrivateChatShortcut();
-      } else if (chatOperations.clickHistoryButton()) {
-        setTimeout(chatOperations.triggerDeleteSequence.bind(chatOperations), CONFIG.delays.MENU_OPEN);
+      } else {
+        chatOperations.openHistoryMenu().then(() => {
+          setTimeout(chatOperations.triggerDeleteSequence.bind(chatOperations), CONFIG.delays.MENU_OPEN);
+        });
       }
     }
   };
