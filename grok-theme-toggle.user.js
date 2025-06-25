@@ -36,7 +36,7 @@
             POSITION_MARGIN: 20,
             BUTTON_STYLES: {
                 position: 'fixed',
-                zIndex: '10000',
+                zIndex: '40',
                 width: '36px',
                 height: '36px',
                 padding: '4px',
