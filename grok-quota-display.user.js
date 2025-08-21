@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Grok Quota Display
 // @namespace    nisc
-// @version      2025.06.08-A
+// @version      2025.08.21-A
 // @description  Displays rate limits on grok.com
 // @homepageURL  https://github.com/nisc/grok-userscripts/
 // @downloadURL  https://raw.githubusercontent.com/nisc/grok-userscripts/main/grok-quota-display.user.js
@@ -21,13 +21,8 @@
      */
     const CONFIG = {
         MODEL: {
-            name: 'grok-3'
-        },
-        REQUEST_TYPES: {
-            DEFAULT: 'Default',
-            REASONING: 'Reason',
-            DEEPSEARCH: 'Deep',
-            DEEPERSEARCH: 'Deeper'
+            modelName: 'grok-4',
+            requestKind: 'DEFAULT'
         },
         API: {
             endpoint: 'https://grok.com/rest/rate-limits',
@@ -54,7 +49,7 @@
                     position: fixed;
                     bottom: 1rem;
                     right: 1rem;
-                    z-index: 0.25rem;
+                    z-index: 1000;
                 }
                 .grok-rate-limit-wrapper .grok-menu {
                     display: flex;
@@ -73,7 +68,7 @@
                     line-height: inherit;
                 }
             `,
-            refreshInterval: 30000 // in milliseconds
+            refreshInterval: 10000 // in milliseconds
         },
         TIME: {
             SECONDS_PER_HOUR: 3600,
@@ -84,15 +79,11 @@
     /**
      * Utility functions for common operations
      * - ID generation for API requests
-     * - Element ID formatting
      * - Time window and value formatting
      */
     const utils = {
         // Generates a random ID for API request tracking
         generateId: () => Math.random().toString(16).slice(2),
-
-        // Creates consistent element IDs for rate limit displays
-        getLimitElementId: type => `rate_limit_${type.toLowerCase()}`,
 
         // Formats time windows into days or hours with appropriate units
         formatTimeWindow: seconds => {
@@ -132,14 +123,11 @@
             const column = document.createElement('div');
             column.className = 'grok-column';
 
-            // Create display elements for each request type
-            Object.entries(CONFIG.REQUEST_TYPES).forEach(([type, displayName]) => {
-                const div = document.createElement('div');
-                div.id = utils.getLimitElementId(type);
-                div.className = 'grok-rate-limit';
-                div.textContent = `${displayName}: N/A`;
-                column.appendChild(div);
-            });
+            const div = document.createElement('div');
+            div.id = 'rate_limit_tokens';
+            div.className = 'grok-rate-limit';
+            div.textContent = 'Tokens: N/A';
+            column.appendChild(div);
 
             menu.appendChild(column);
             wrapper.appendChild(menu);
@@ -148,21 +136,24 @@
 
         // Updates the display with new rate limit information
         updateRateLimits: limits => {
-            Object.entries(CONFIG.REQUEST_TYPES).forEach(([type, displayName]) => {
-                const elem = document.getElementById(utils.getLimitElementId(type));
-                const limit = limits?.[type];
+            const elem = document.getElementById('rate_limit_tokens');
 
-                if (limit?.windowSizeSeconds) {
-                    const { value, unit } = utils.formatTimeWindow(limit.windowSizeSeconds);
-                    const formattedValue = utils.formatValue(value);
-                    const display =
-                        `${displayName}: <b>${limit.remainingQueries}</b>/${limit.totalQueries} ` +
-                        `(${formattedValue}${unit})`;
-                    elem.innerHTML = display;
-                } else {
-                    elem.textContent = `${displayName}: N/A`;
-                }
-            });
+            if (!elem) {
+                return;
+            }
+
+            const windowSeconds = limits?.windowSizeSeconds;
+            const remainingTokens = limits?.remainingTokens;
+            const totalTokens = limits?.totalTokens;
+
+            if (typeof windowSeconds === 'number' && typeof remainingTokens === 'number' && typeof totalTokens === 'number') {
+                const { value, unit } = utils.formatTimeWindow(windowSeconds);
+                const formattedValue = utils.formatValue(value);
+                const display = `Tokens: <b>${remainingTokens}</b>/${totalTokens} (${formattedValue}${unit})`;
+                elem.innerHTML = display;
+            } else {
+                elem.textContent = 'Tokens: N/A';
+            }
         }
     };
 
@@ -171,39 +162,33 @@
      * Handles all server communication and error handling
      */
     const api = {
-        // Fetches rate limits for all request types in parallel
+        // Fetches rate limits
         async fetchRateLimits() {
             try {
-                const limits = {};
-                // Create an array of promises for parallel execution
-                const requests = Object.keys(CONFIG.REQUEST_TYPES).map(async type => {
-                    const headers = {
-                        ...CONFIG.API.headers,
-                        'User-Agent': navigator.userAgent,
-                        'X-Xai-Request-Id': utils.generateId()
-                    };
+                const headers = {
+                    ...CONFIG.API.headers,
+                    'User-Agent': navigator.userAgent,
+                    'X-Xai-Request-Id': utils.generateId()
+                };
 
-                    const response = await fetch(CONFIG.API.endpoint, {
-                        method: 'POST',
-                        headers,
-                        body: JSON.stringify({
-                            requestKind: type,
-                            modelName: CONFIG.MODEL.name
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch ${CONFIG.MODEL.name} ${type} rate limits`);
-                    }
-                    limits[type] = await response.json();
+                const response = await fetch(CONFIG.API.endpoint, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        modelName: CONFIG.MODEL.modelName,
+                        requestKind: CONFIG.MODEL.requestKind
+                    })
                 });
 
-                // Wait for all requests to complete
-                await Promise.all(requests);
-                ui.updateRateLimits(limits);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${CONFIG.MODEL.modelName} rate limits`);
+                }
+
+                const json = await response.json();
+                ui.updateRateLimits(json);
             } catch (error) {
                 ui.updateRateLimits(null);
-                console.error('Failed to fetch rate limits. Please try again later.');
+                console.error('GROK-USR: Failed to fetch rate limits. Please try again later.');
             }
         }
     };
@@ -212,7 +197,7 @@
      * Initializes the application:
      * 1. Creates and injects styles
      * 2. Creates and adds the display menu
-     * 3. Fetches initial rate limits
+     * 3. Fetches initial rate limit
      * 4. Sets up periodic updates
      */
     const init = () => {
