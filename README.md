@@ -3,18 +3,14 @@
 - [Introduction](#introduction)
 - [Installation Instructions](#installation-instructions)
 - [Available Scripts](#available-scripts)
-- [Contributing](#contributing)
-- [License](#license)
-- [Additional Notes](#additional-notes)
 
 ## Introduction
 
-Welcome to the Grok Userscripts repository! This collection includes various user scripts designed to enhance your experience with Grok, the AI assistant developed by xAI. For more information on Grok and its capabilities, visit the [official xAI website](https://x.ai). **Please note that I am in no way affiliated with xAI.**
+This collection includes various user scripts designed to enhance your experience with Grok, the AI assistant developed by xAI. For more information on Grok and its capabilities, visit the [official xAI website](https://x.ai). **Please note that I am in no way affiliated with xAI.**
 
 ⚠️ **DISCLAIMER**: These scripts are provided "AS IS" without warranty of any kind. Use them at your own risk. The authors are not responsible for any consequences of using these scripts, including but not limited to:
 - Account-related issues
 - Data loss or corruption
-- Browser performance problems
 - Any changes to Grok's functionality or behavior
 - Terms of Service violations
 
@@ -37,30 +33,3 @@ These scripts have been tested with Firefox and Violentmonkey on macOS, but shou
 | [`grok-return-from-files-view-shortcut.user.js`](grok-return-from-files-view-shortcut.user.js) | Allows returning from the files view (`https://grok.com/files`) to the previous page or main page (`https://grok.com`) using the ESC key. |
 | [`grok-theme-toggle.user.js`](grok-theme-toggle.user.js) | Adds a toggle button at the bottom left to switch between light and dark themes on grok.com, with theme persistence. |
 | [`grok-think-shortcut.user.js`](grok-think-shortcut.user.js) | Adds keyboard shortcut (Ctrl+Cmd+T on macOS, Ctrl+Alt+T on Windows/Linux) to quickly toggle Grok's "Think" mode without using the mouse. |
-
-## Contributing
-
-Submit a pull request or open an issue to discuss your ideas for improvements.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Additional Notes
-
-1. **Security & Maintenance**:
-   - Review script code before installation
-   - Keep all components (scripts, userscript manager) updated
-   - Report security concerns via issues
-
-2. **Performance & Compatibility**:
-   - Scripts may behave differently across browsers and systems
-   - Scripts may conflict with each other or extensions
-   - Report compatibility issues
-
-3. **Future Changes**:
-   - Scripts may need updates when Grok changes
-   - Features may become officially supported
-   - Consider contributing fixes
-
-By installing and using these scripts, you acknowledge that you do so at your own risk. The authors and contributors cannot be held liable for any issues that may arise from their use.
