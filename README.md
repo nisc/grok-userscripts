@@ -8,12 +8,6 @@
 
 This collection includes various user scripts designed to enhance your experience with Grok, the AI assistant developed by xAI. For more information on Grok and its capabilities, visit the [official xAI website](https://x.ai). **Please note that I am in no way affiliated with xAI.**
 
-⚠️ **DISCLAIMER**: These scripts are provided "AS IS" without warranty of any kind. Use them at your own risk. The authors are not responsible for any consequences of using these scripts, including but not limited to:
-- Account-related issues
-- Data loss or corruption
-- Any changes to Grok's functionality or behavior
-- Terms of Service violations
-
 ## Installation Instructions
 
 1. Install a userscript manager like [Violentmonkey](https://violentmonkey.github.io/)
